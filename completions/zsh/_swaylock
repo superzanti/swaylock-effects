@@ -60,5 +60,13 @@ _arguments -s \
 	'(--text-ver-color)'--text-ver-color'[Sets the color of the text when verifying]:color:' \
 	'(--text-wrong)'--text-wrong'[Sets the string displayed when the password is wrong]' \
 	'(--text-wrong-color)'--text-wrong-color'[Sets the color of the text when invalid]:color:' \
+	'(--text)'--text'[Draw the given text on the screen]' \
+	'(--text-size)'--text-size'[Sets a fixed font size for the screen text]' \
+	'(--text-x-position)'--text-x-position'[Sets the horizontal position of the screen text]' \
+	'(--text-y-position)'--text-y-position'[Sets the vertical position of the screen text]' \
+	'(--text-shadow-color)'--text-shadow-color'[Sets the color of the screen text shadow]:color:' \
+	'(--text-shadow-offset)'--text-shadow-offset'[Sets the screen text shadow offset in pixels]' \
+	'(--text-outline-color)'--text-outline-color'[Sets the color of the screen text outline]:color:' \
+	'(--text-outline-width)'--text-outline-width'[Sets the outline width of the screen text in pixels]' \
 	'(--tiling -T)'{--tiling,-T}'[Same as --scaling=tile]' \
 	'(--version -v)'{--version,-v}'[Show the version number and quit]'

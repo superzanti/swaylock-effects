@@ -238,6 +238,30 @@ Locks your Wayland session.
 *--text-wrong-color* <rrggbb[aa]>
 	Sets the color of the text when invalid.
 
+*--text* <string>
+	Draw the given text on the screen.
+
+*--text-size* <size>
+	Sets a fixed font size for the screen text.
+
+*--text-x-position* <x>
+	Sets the horizontal position of the screen text center.
+
+*--text-y-position* <y>
+	Sets the vertical position of the screen text center.
+
+*--text-shadow-color* <rrggbb[aa]>
+	Sets the color of the screen text shadow.
+
+*--text-shadow-offset* <x>,<y>
+	Sets the screen text shadow offset in pixels.
+
+*--text-outline-color* <rrggbb[aa]>
+	Sets the color of the screen text outline.
+
+*--text-outline-width* <width>
+	Sets the outline width of the screen text in pixels.
+
 *--effect-blur* <radius>x<times>
 	Blur displayed images.
 

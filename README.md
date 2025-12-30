@@ -5,11 +5,7 @@ which adds built-in screenshots and image manipulation effects like blurring.
 It's inspired by [i3lock-color](https://github.com/PandorasFox/i3lock-color),
 although the feature sets aren't perfectly overlapping.
 
-This repository ([jirutka/swaylock-effects](https://github.com/jirutka/swaylock-effects))
-is a fork of [mortie/swaylock-effects](https://github.com/mortie/swaylock-effects)
-which is no longer maintained.
-
-![Screenshot](https://raw.githubusercontent.com/jirutka/swaylock-effects/master/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/mortie/swaylock-effects/master/screenshot.png)
 
 ## Example Command
 
@@ -55,6 +51,10 @@ The main new features compared to upstream swaylock are:
 * `--indicator-image <path>` to display an image inside the indicator.
 * `--text-clear <string>`, `--text-caps-lock <string>`, `--text-ver <string>`,
   and `--text-wrong <string>` to change the texts displayed inside the indicator.
+* `--text <string>` to draw custom text on the screen.
+	* Position it with `--text-x-position` and `--text-y-position`.
+	* Add styling with `--text-shadow-color`, `--text-shadow-offset`,
+	  `--text-outline-color`, `--text-outline-width`, and `--text-size`.
 * Various effects which can be applied to the background image
 	* `--effect-blur <radius>x<times>`: Blur the image (thanks to yvbbrjdr's
 	  fast box blur algorithm in
@@ -70,38 +70,15 @@ The main new features compared to upstream swaylock are:
 New feature ideas are welcome as issues (though I may never get around to
 implement them), new feature implementations are welcome as pull requests :)
 
-## Versions
-
-swaylock-effects continuously incorporates changes from the original [swaylock](https://github.com/swaywm/swaylock).
-The following table shows the relation between the swaylock-effect and swaylock versions.
-
-| swaylock-effects | swaylock (original)                                                                                 |
-| ---------------- | --------------------------------------------------------------------------------------------------- |
-| 1.6-0            | [1.5](https://github.com/swaywm/swaylock/tree/1.5)                                                  |
-| 1.6-1            | 1.5-7-g[a99afe6a](https://github.com/swaywm/swaylock/tree/a99afe6a7075c962da72b140f02e18318052d833) |
-| 1.6-2            | 1.5-9-g[235b925d](https://github.com/swaywm/swaylock/tree/235b925df7e1bb82d98f1ac8c02e8f85d0a54ee9) |
-| 1.6-3            | 1.5-9-g[235b925d](https://github.com/swaywm/swaylock/tree/235b925df7e1bb82d98f1ac8c02e8f85d0a54ee9) |
-| 1.6.10           | [1.6](https://github.com/swaywm/swaylock/tree/1.6)                                                  |
-| 1.6.11           | [1.6](https://github.com/swaywm/swaylock/tree/1.6)                                                  |
-| 1.7.0.0          | 1.7-8-g[b4e3a2b](https://github.com/swaywm/swaylock/tree/10ab8b274020a9323413d093c45f13490929fb81)  |
-
-
 ## Installation
 
 ### From Packages
 
 * Alpine Linux: [swaylock-effects](https://pkgs.alpinelinux.org/packages?name=swaylock-effects)
-* Arch Linux (AUR): [swaylock-effects](https://aur.archlinux.org/packages/swaylock-effects/) / [swaylock-effects-git](https://aur.archlinux.org/packages/swaylock-effects-git/)
-* Fedora (Copr): [swaylock-effects](https://copr.fedorainfracloud.org/coprs/trs-sod/swaylock-effects)
-* FreeBSD: [swaylock-effects](https://www.freshports.org/x11/swaylock-effects/)
-* Guix: [swaylock-effects](https://packages.guix.gnu.org/packages/swaylock-effects)
-* Nix: [swaylock-effects](https://github.com/NixOS/nixpkgs/blob/master/pkgs/applications/window-managers/sway/lock-effects.nix)
-
-The original [mortie/swaylock-effects](https://github.com/mortie/swaylock-effects) (now unmaintained)
-has been packaged for:
-
+* Arch Linux (AUR): [swaylock-effects-git](https://aur.archlinux.org/packages/swaylock-effects-git/)
 * Fedora (Copr): [swaylock-effects](https://copr.fedorainfracloud.org/coprs/eddsalkield/swaylock-effects/)
   (thanks to Edd Salkield)
+* FreeBSD: [swaylock-effects](https://www.freshports.org/x11/swaylock-effects/)
 * Gentoo (GURU overlay): [swaylock-effects](https://gpo.zugaina.org/Overlays/guru/gui-apps/swaylock-effects)
 * T2 SDE: [swaylock-effects](https://t2sde.org/packages/swaylock-effects)
 

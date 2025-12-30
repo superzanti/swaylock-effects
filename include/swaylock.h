@@ -82,6 +82,20 @@ struct swaylock_args {
 	bool password_grace_no_mouse;
 	bool password_grace_no_touch;
 
+	char *text;
+	uint32_t text_font_size;
+	uint32_t text_x_position;
+	uint32_t text_y_position;
+	bool override_text_x_position;
+	bool override_text_y_position;
+	bool text_shadow;
+	int32_t text_shadow_offset_x;
+	int32_t text_shadow_offset_y;
+	uint32_t text_shadow_color;
+	bool text_outline;
+	uint32_t text_outline_width;
+	uint32_t text_outline_color;
+
 	char *text_cleared;
 	char *text_caps_lock;
 	char *text_verifying;

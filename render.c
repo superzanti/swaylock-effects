@@ -69,6 +69,74 @@ static void timetext(struct swaylock_surface *surface, char **tstr, char **dstr)
 	setlocale(LC_TIME, prevloc);
 }
 
+static void draw_screen_text(struct swaylock_surface *surface, cairo_t *cairo) {
+	struct swaylock_state *state = surface->state;
+	if (!state->args.text || state->args.text[0] == '\0') {
+		return;
+	}
+
+	double buffer_width = surface->width * surface->scale;
+	double buffer_height = surface->height * surface->scale;
+
+	cairo_save(cairo);
+	cairo_set_antialias(cairo, CAIRO_ANTIALIAS_BEST);
+
+	cairo_font_options_t *fo = cairo_font_options_create();
+	cairo_font_options_set_hint_style(fo, CAIRO_HINT_STYLE_FULL);
+	cairo_font_options_set_antialias(fo, CAIRO_ANTIALIAS_SUBPIXEL);
+	cairo_font_options_set_subpixel_order(fo, to_cairo_subpixel_order(surface->subpixel));
+	cairo_set_font_options(cairo, fo);
+	cairo_font_options_destroy(fo);
+
+	cairo_select_font_face(cairo, state->args.font,
+			CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+	double font_size = state->args.text_font_size > 0 ?
+		state->args.text_font_size : state->args.font_size;
+	if (font_size <= 0) {
+		font_size = 32;
+	}
+	cairo_set_font_size(cairo, font_size * surface->scale);
+
+	cairo_text_extents_t extents;
+	cairo_font_extents_t fe;
+	cairo_text_extents(cairo, state->args.text, &extents);
+	cairo_font_extents(cairo, &fe);
+
+	double center_x = buffer_width / 2.0;
+	double center_y = buffer_height / 2.0;
+	if (state->args.override_text_x_position) {
+		center_x = state->args.text_x_position * surface->scale;
+	}
+	if (state->args.override_text_y_position) {
+		center_y = state->args.text_y_position * surface->scale;
+	}
+
+	double x = center_x - (extents.width / 2 + extents.x_bearing);
+	double y = center_y + (fe.height / 2 - fe.descent);
+
+	if (state->args.text_shadow) {
+		cairo_save(cairo);
+		cairo_set_source_u32(cairo, state->args.text_shadow_color);
+		cairo_move_to(cairo,
+			x + state->args.text_shadow_offset_x * surface->scale,
+			y + state->args.text_shadow_offset_y * surface->scale);
+		cairo_show_text(cairo, state->args.text);
+		cairo_restore(cairo);
+	}
+
+	cairo_move_to(cairo, x, y);
+	cairo_text_path(cairo, state->args.text);
+	if (state->args.text_outline && state->args.text_outline_width > 0) {
+		cairo_set_source_u32(cairo, state->args.text_outline_color);
+		cairo_set_line_width(cairo, state->args.text_outline_width * surface->scale);
+		cairo_stroke_preserve(cairo);
+	}
+	cairo_set_source_u32(cairo, state->args.colors.text.input);
+	cairo_fill(cairo);
+
+	cairo_restore(cairo);
+}
+
 void render_frame_background(struct swaylock_surface *surface, bool commit) {
 	struct swaylock_state *state = surface->state;
 
@@ -118,6 +186,8 @@ void render_frame_background(struct swaylock_surface *surface, bool commit) {
 	}
 	cairo_restore(cairo);
 	cairo_identity_matrix(cairo);
+
+	draw_screen_text(surface, cairo);
 
 	wl_surface_set_buffer_scale(surface->surface, surface->scale);
 	wl_surface_attach(surface->surface, buffer->buffer, 0, 0);

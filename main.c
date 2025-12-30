@@ -69,6 +69,22 @@ static uint32_t parse_color(const char *color) {
 	return res;
 }
 
+static bool parse_int_pair(const char *str, char delim, int *x, int *y) {
+	char *endptr;
+	long first = strtol(str, &endptr, 10);
+	if (endptr == str || *endptr != delim) {
+		return false;
+	}
+	const char *second_str = endptr + 1;
+	long second = strtol(second_str, &endptr, 10);
+	if (endptr == second_str || *endptr != '\0') {
+		return false;
+	}
+	*x = (int)first;
+	*y = (int)second;
+	return true;
+}
+
 static const char *parse_screen_pos(const char *str, struct swaylock_effect_screen_pos *pos) {
 	char *eptr;
 	float res = strtof(str, &eptr);
@@ -965,6 +981,14 @@ static int parse_options(int argc, char **argv, struct swaylock_state *state,
 		LO_TEXT_VER_COLOR,
 		LO_TEXT_WRONG,
 		LO_TEXT_WRONG_COLOR,
+		LO_SCREEN_TEXT,
+		LO_SCREEN_TEXT_SIZE,
+		LO_SCREEN_TEXT_X_POSITION,
+		LO_SCREEN_TEXT_Y_POSITION,
+		LO_SCREEN_TEXT_SHADOW_COLOR,
+		LO_SCREEN_TEXT_SHADOW_OFFSET,
+		LO_SCREEN_TEXT_OUTLINE_COLOR,
+		LO_SCREEN_TEXT_OUTLINE_WIDTH,
 		LO_EFFECT_BLUR,
 		LO_EFFECT_PIXELATE,
 		LO_EFFECT_SCALE,
@@ -1045,6 +1069,14 @@ static int parse_options(int argc, char **argv, struct swaylock_state *state,
 		{"text-ver-color", required_argument, NULL, LO_TEXT_VER_COLOR},
 		{"text-wrong", required_argument, NULL, LO_TEXT_WRONG},
 		{"text-wrong-color", required_argument, NULL, LO_TEXT_WRONG_COLOR},
+		{"text", required_argument, NULL, LO_SCREEN_TEXT},
+		{"text-size", required_argument, NULL, LO_SCREEN_TEXT_SIZE},
+		{"text-x-position", required_argument, NULL, LO_SCREEN_TEXT_X_POSITION},
+		{"text-y-position", required_argument, NULL, LO_SCREEN_TEXT_Y_POSITION},
+		{"text-shadow-color", required_argument, NULL, LO_SCREEN_TEXT_SHADOW_COLOR},
+		{"text-shadow-offset", required_argument, NULL, LO_SCREEN_TEXT_SHADOW_OFFSET},
+		{"text-outline-color", required_argument, NULL, LO_SCREEN_TEXT_OUTLINE_COLOR},
+		{"text-outline-width", required_argument, NULL, LO_SCREEN_TEXT_OUTLINE_WIDTH},
 		{"effect-blur", required_argument, NULL, LO_EFFECT_BLUR},
 		{"effect-pixelate", required_argument, NULL, LO_EFFECT_PIXELATE},
 		{"effect-scale", required_argument, NULL, LO_EFFECT_SCALE},
@@ -1206,6 +1238,22 @@ static int parse_options(int argc, char **argv, struct swaylock_state *state,
 			"Sets the color of the text when verifying.\n"
 		"  --text-wrong-color <color>       "
 			"Sets the color of the text when invalid.\n"
+		"  --text <string>                  "
+			"Draw the given text on the screen.\n"
+		"  --text-size <size>               "
+			"Sets a fixed font size for the screen text.\n"
+		"  --text-x-position <x>            "
+			"Sets the horizontal position of the screen text center.\n"
+		"  --text-y-position <y>            "
+			"Sets the vertical position of the screen text center.\n"
+		"  --text-shadow-color <color>      "
+			"Sets the color of the screen text shadow.\n"
+		"  --text-shadow-offset <x>,<y>     "
+			"Sets the screen text shadow offset in pixels.\n"
+		"  --text-outline-color <color>     "
+			"Sets the color of the screen text outline.\n"
+		"  --text-outline-width <width>     "
+			"Sets the outline width of the screen text in pixels.\n"
 		"  --effect-blur <radius>x<times>   "
 			"Blur images.\n"
 		"  --effect-pixelate <factor>       "
@@ -1533,6 +1581,60 @@ static int parse_options(int argc, char **argv, struct swaylock_state *state,
 				state->args.colors.text.wrong = parse_color(optarg);
 			}
 			break;
+		case LO_SCREEN_TEXT:
+			if (state) {
+				free(state->args.text);
+				state->args.text = strdup(optarg);
+			}
+			break;
+		case LO_SCREEN_TEXT_SIZE:
+			if (state) {
+				state->args.text_font_size = atoi(optarg);
+			}
+			break;
+		case LO_SCREEN_TEXT_X_POSITION:
+			if (state) {
+				state->args.override_text_x_position = true;
+				state->args.text_x_position = atoi(optarg);
+			}
+			break;
+		case LO_SCREEN_TEXT_Y_POSITION:
+			if (state) {
+				state->args.override_text_y_position = true;
+				state->args.text_y_position = atoi(optarg);
+			}
+			break;
+		case LO_SCREEN_TEXT_SHADOW_COLOR:
+			if (state) {
+				state->args.text_shadow = true;
+				state->args.text_shadow_color = parse_color(optarg);
+			}
+			break;
+		case LO_SCREEN_TEXT_SHADOW_OFFSET:
+			if (state) {
+				int x, y;
+				if (parse_int_pair(optarg, ',', &x, &y)) {
+					state->args.text_shadow = true;
+					state->args.text_shadow_offset_x = x;
+					state->args.text_shadow_offset_y = y;
+				} else {
+					swaylock_log(LOG_ERROR,
+						"Invalid text shadow offset %s, ignoring", optarg);
+				}
+			}
+			break;
+		case LO_SCREEN_TEXT_OUTLINE_COLOR:
+			if (state) {
+				state->args.text_outline = true;
+				state->args.text_outline_color = parse_color(optarg);
+			}
+			break;
+		case LO_SCREEN_TEXT_OUTLINE_WIDTH:
+			if (state) {
+				state->args.text_outline = true;
+				state->args.text_outline_width = atoi(optarg);
+			}
+			break;
 		case LO_EFFECT_BLUR:
 			if (state) {
 				state->args.effects = realloc(state->args.effects,
@@ -1847,6 +1949,20 @@ int main(int argc, char **argv) {
 		.datestr = strdup("%a, %x"),
 		.allow_fade = true,
 		.password_grace_period = 0,
+
+		.text = NULL,
+		.text_font_size = 0,
+		.text_x_position = 0,
+		.text_y_position = 0,
+		.override_text_x_position = false,
+		.override_text_y_position = false,
+		.text_shadow = false,
+		.text_shadow_offset_x = 2,
+		.text_shadow_offset_y = 2,
+		.text_shadow_color = 0x00000088,
+		.text_outline = false,
+		.text_outline_width = 2,
+		.text_outline_color = 0x000000FF,
 
 		.text_cleared = strdup("Cleared"),
 		.text_caps_lock = strdup("Caps Lock"),

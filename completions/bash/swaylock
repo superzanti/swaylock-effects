@@ -83,6 +83,14 @@ _swaylock()
     --text-ver-color
     --text-wrong
     --text-wrong-color
+    --text
+    --text-size
+    --text-x-position
+    --text-y-position
+    --text-shadow-color
+    --text-shadow-offset
+    --text-outline-color
+    --text-outline-width
     --tiling
     --version
   )
